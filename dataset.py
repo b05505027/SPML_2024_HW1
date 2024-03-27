@@ -89,21 +89,20 @@ class CIFAR100MetaInfo(DatasetMetaInfo):
         self.val_transform = cifar100_val_transform
         self.ml_type = "imgcls"
 
-class CIFAR100FGSMMetaInfo(DatasetMetaInfo):
+class CIFAR100FGSMMetaInfo(CIFAR100MetaInfo):
     def __init__(self):
         super(CIFAR100FGSMMetaInfo, self).__init__()
         self.label = "CIFAR100FGSM"
         self.root_dir_name = "cifar-100_FGSM"
         self.root_dir_path = os.path.join('./', 'cifar-100_FGSM')
-        self.dataset_class = CIFAR100Eval
-        self.in_channels = 3
-        self.num_classes = 100
-        self.input_image_size = (32, 32)
-        self.val_metric_capts = ["Val.Err"]
-        self.val_metric_names = ["Top1Error"]
-        self.val_metric_extra_kwargs = [{"name": "err"}]
-        self.val_transform = cifar100_val_transform
-        self.ml_type = "imgcls"
+
+
+class CIFAR100CWMetaInfo(CIFAR100MetaInfo):
+    def __init__(self):
+        super(CIFAR100CWMetaInfo, self).__init__()
+        self.label = "CIFAR100CW"
+        self.root_dir_name = "cifar-100_CW_mix"
+        self.root_dir_path = os.path.join('./', 'cifar-100_CW_mix')
 
 def cifar100_val_transform(ds_metainfo,
                           mean_rgb=(0.4914, 0.4822, 0.4465),

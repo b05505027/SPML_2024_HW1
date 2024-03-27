@@ -9,9 +9,23 @@ from tqdm import tqdm
 
 ''' Step 0: load the dataset and the model '''
 dataset = CIFAR100Eval(root='./cifar-100_eval', transform=None)
-net = ptcv_get_model("resnet20_cifar100", pretrained=True)
-freeze_model(net)
-net.eval()
+
+nets = [
+    ptcv_get_model("resnet56_cifar100", pretrained=True),
+    ptcv_get_model("resnet20_cifar100", pretrained=True),
+    ptcv_get_model("wrn16_10_cifar100", pretrained=True),
+    ptcv_get_model("seresnet164bn_cifar100", pretrained=True),
+    ptcv_get_model("resnext29_32x4d_cifar100", pretrained=True),
+    ptcv_get_model("resnet110_cifar100", pretrained=True),
+    ptcv_get_model("pyramidnet110_a270_cifar100", pretrained=True),
+    ptcv_get_model("densenet100_k24_cifar100", pretrained=True),
+
+]
+
+for net in nets:
+    freeze_model(net)
+    net.eval()
+
 criterion = torch.nn.CrossEntropyLoss()
 
 
@@ -34,7 +48,14 @@ for data in tqdm(dataset):
     ''' Step3: Make prediction from the image'''
     # Use vanilla gradient descent for optimization
     optimizer = torch.optim.SGD([img], lr=0.01)
-    prediction = net(img_norm.unsqueeze(0))
+    
+
+    # randomly select 3 models to make prediction
+    selection = np.random.choice(len(nets), 3, replace=False)
+    predictions = []
+    for k in selection:
+        predictions.append(nets[k](img_norm.unsqueeze(0)))
+    prediction = torch.mean(torch.stack(predictions), dim=0)
 
     ''' Step4: Calculate the loss and backpropagate '''
     loss = -criterion(prediction, torch.tensor(label).unsqueeze(0))

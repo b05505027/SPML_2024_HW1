@@ -1,17 +1,17 @@
 from torch.utils.data import DataLoader
-from dataset import CIFAR100MetaInfo, CIFAR100FGSMMetaInfo
+from dataset import CIFAR100MetaInfo, CIFAR100FGSMMetaInfo, CIFAR100CWMetaInfo
 from PIL import Image
 import numpy as np
 
 
 def get_dataloader(mode, batch_size, size=None):
     # check if the mode is in ['fgsm', 'pgd', 'eval']
-    if mode not in ['fgsm', 'pgd', 'eval']:
+    if mode not in ['fgsm', 'cw', 'eval']:
         raise ValueError(f"Invalid mode: {mode}")
     if mode == 'eval':
         ds_meta = CIFAR100MetaInfo()
-    # elif mode == 'pgd':
-    #     ds_meta = CIFAR100FGSMMetaInfo()
+    elif mode == 'cw':
+        ds_meta = CIFAR100CWMetaInfo()
     elif mode == 'fgsm':
         ds_meta = CIFAR100FGSMMetaInfo()
 
@@ -59,6 +59,10 @@ def compare_images(image_path1, image_path2):
     max_diff = np.max(diff)
     # get the index of the maximum difference
     max_diff_idx = np.unravel_index(np.argmax(diff), diff.shape)
+    print('max difd at index:', max_diff_idx)
+    # value of img1 and img2 at the max_diff_idx
+    print('img1 value:', img1_np[max_diff_idx])
+    print('img2 value:', img2_np[max_diff_idx])
     
     return (within_threshold, max_diff)
 
